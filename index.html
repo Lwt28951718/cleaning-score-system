@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>桃源國小打掃評分系統</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft JhengHei', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 10px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2196F3, #1976D2);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .header h1 {
+            margin-bottom: 5px;
+            font-size: 1.5em;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 0.9em;
+        }
+
+        .content {
+            padding: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #2196F3;
+        }
+
+        .class-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .class-btn {
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 16px;
+            text-align: center;
+        }
+
+        .class-btn:hover {
+            background: #f0f8ff;
+            border-color: #2196F3;
+        }
+
+        .class-btn.selected {
+            background: #2196F3;
+            color: white;
+            border-color: #1976D2;
+        }
+
+        .radio-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .radio-item {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .radio-item input[type="radio"] {
+            margin-right: 8px;
+            transform: scale(1.2);
+        }
+
+        .score-input {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .score-slider {
+            flex: 1;
+            height: 8px;
+            border-radius: 4px;
+            background: #ddd;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        .score-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #2196F3;
+            cursor: pointer;
+        }
+
+        .score-display {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2196F3;
+            min-width: 40px;
+            text-align: center;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 20px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.4);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #FF9800, #F57C00);
+            color: white;
+        }
+
+        .btn-info {
+            background: linear-gradient(135deg, #2196F3, #1976D2);
+            color: white;
+        }
+
+        .nav-tabs {
+            display: flex;
+            background: #f5f5f5;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+
+        .nav-tab {
+            flex: 1;
+            padding: 12px;
+            text-align: center;
+            cursor: pointer;
+            background: #f5f5f5;
+            border: none;
+            transition: all 0.3s;
+        }
+
+        .nav-tab.active {
+            background: #2196F3;
+            color: white;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-danger {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .ranking-list {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+        }
+
+        .ranking-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            margin-bottom: 8px;
+            background: white;
+            border-radius: 6px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .ranking-number {
+            font-size: 18px;
+            font-weight: bold;
+            color: #2196F3;
+            min-width: 30px;
+        }
+
+        .ranking-class {
+            flex: 1;
+            margin-left: 15px;
+            font-weight: bold;
+        }
+
+        .ranking-score {
+            font-size: 16px;
+            color: #666;
+        }
+
+        .login-form {
+            max-width: 400px;
+            margin: 50px auto;
+            padding: 30px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                margin: 5px;
+                border-radius: 10px;
+            }
+            
+            .class-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .radio-group {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 登入頁面 -->
+    <div id="loginPage" class="login-form">
+        <div class="header">
+            <h1>桃源國小打掃評分系統</h1>
+            <p>請輸入您的姓名登入</p>
+        </div>
+        <div style="padding: 20px;">
+            <div class="form-group">
+                <label for="teacherName">老師姓名：</label>
+                <input type="text" id="teacherName" class="form-control" placeholder="請輸入您的姓名">
+            </div>
+            <button onclick="login()" class="btn btn-primary">登入系統</button>
+        </div>
+    </div>
+
+    <!-- 主系統頁面 -->
+    <div id="mainSystem" class="container hidden">
+        <div class="header">
+            <h1>桃源國小打掃評分系統</h1>
+            <p id="welcomeText">歡迎使用，請選擇功能</p>
+        </div>
+
+        <div class="content">
+            <!-- 導航標籤 -->
+            <div class="nav-tabs">
+                <button class="nav-tab active" onclick="switchTab('score')">評分</button>
+                <button class="nav-tab" onclick="switchTab('ranking')">排行榜</button>
+                <button class="nav-tab" onclick="switchTab('history')">歷史記錄</button>
+            </div>
+
+            <!-- 評分頁面 -->
+            <div id="scoreTab" class="tab-content active">
+                <div id="alertContainer"></div>
+                
+                <form id="scoreForm">
+                    <div class="form-group">
+                        <label for="scoreDate">評分日期：</label>
+                        <input type="date" id="scoreDate" class="form-control" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>評分時段：</label>
+                        <div class="radio-group">
+                            <label class="radio-item">
+                                <input type="radio" name="period" value="上午" required>
+                                上午
+                            </label>
+                            <label class="radio-item">
+                                <input type="radio" name="period" value="下午" required>
+                                下午
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>評分類型：</label>
+                        <div class="radio-group">
+                            <label class="radio-item">
+                                <input type="radio" name="type" value="內掃" required>
+                                內掃
+                            </label>
+                            <label class="radio-item">
+                                <input type="radio" name="type" value="外掃" required>
+                                外掃
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>選擇班級：</label>
+                        <div class="class-grid">
+                            <div class="class-btn" onclick="selectClass('一忠')">一忠</div>
+                            <div class="class-btn" onclick="selectClass('一孝')">一孝</div>
+                            <div class="class-btn" onclick="selectClass('二忠')">二忠</div>
+                            <div class="class-btn" onclick="selectClass('二孝')">二孝</div>
+                            <div class="class-btn" onclick="selectClass('三忠')">三忠</div>
+                            <div class="class-btn" onclick="selectClass('三孝')">三孝</div>
+                            <div class="class-btn" onclick="selectClass('四忠')">四忠</div>
+                            <div class="class-btn" onclick="selectClass('四孝')">四孝</div>
+                            <div class="class-btn" onclick="selectClass('五忠')">五忠</div>
+                            <div class="class-btn" onclick="selectClass('五孝')">五孝</div>
+                            <div class="class-btn" onclick="selectClass('六忠')">六忠</div>
+                            <div class="class-btn" onclick="selectClass('六孝')">六孝</div>
+                        </div>
+                        <input type="hidden" id="selectedClass" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="scoreSlider">評分分數：</label>
+                        <div class="score-input">
+                            <input type="range" id="scoreSlider" class="score-slider" min="1" max="10" value="5" oninput="updateScoreDisplay(this.value)">
+                            <div class="score-display" id="scoreDisplay">5</div>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">提交評分</button>
+                </form>
+            </div>
+
+            <!-- 排行榜頁面 -->
+            <div id="rankingTab" class="tab-content">
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <button onclick="loadRanking()" class="btn btn-info">載入本週排行榜</button>
+                </div>
+                <div id="rankingContainer">
+                    <div class="alert alert-info">請點擊「載入本週排行榜」查看最新排名</div>
+                </div>
+            </div>
+
+            <!-- 歷史記錄頁面 -->
+            <div id="historyTab" class="tab-content">
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <button onclick="loadHistory()" class="btn btn-secondary">載入評分記錄</button>
+                </div>
+                <div id="historyContainer">
+                    <div class="alert alert-info">請點擊「載入評分記錄」查看歷史資料</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 全域變數
+        let currentUser = '';
+        let selectedClassName = '';
+        
+        // 請替換為您的 Google Apps Script Web App URL
+        const API_URL = 'https://script.google.com/macros/s/https://script.google.com/macros/s/AKfycbzJ0J92gnXDBQTLKSNu6NTpS4ozphkbQAy-K6Km7xpvKzcLYj_mY_xNNBYfh-fS9USz/exec/exec';
+
+        // 登入功能
+        function login() {
+            const teacherName = document.getElementById('teacherName').value.trim();
+            if (!teacherName) {
+                alert('請輸入您的姓名');
+                return;
+            }
+
+            currentUser = teacherName;
+            document.getElementById('loginPage').classList.add('hidden');
+            document.getElementById('mainSystem').classList.remove('hidden');
+            document.getElementById('welcomeText').textContent = `歡迎 ${teacherName} 老師`;
+            
+            // 設定今天的日期
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('scoreDate').value = today;
+        }
+
+        // 切換標籤頁
+        function switchTab(tabName) {
+            // 移除所有active類別
+            document.querySelectorAll('.nav-tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            
+            // 添加active類別到選中的標籤
+            event.target.classList.add('active');
+            document.getElementById(tabName + 'Tab').classList.add('active');
+        }
+
+        // 選擇班級
+        function selectClass(className) {
+            // 移除所有選中狀態
+            document.querySelectorAll('.class-btn').forEach(btn => btn.classList.remove('selected'));
+            
+            // 添加選中狀態
+            event.target.classList.add('selected');
+            selectedClassName = className;
+            document.getElementById('selectedClass').value = className;
+        }
+
+        // 更新分數顯示
+        function updateScoreDisplay(value) {
+            document.getElementById('scoreDisplay').textContent = value;
+        }
+
+        // 提交評分
+        document.getElementById('scoreForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const scoreData = {
+                action: 'submitScore',
+                teacher: currentUser,
+                date: formData.get('scoreDate') || document.getElementById('scoreDate').value,
+                period: formData.get('period'),
+                type: formData.get('type'),
+                className: selectedClassName,
+                score: document.getElementById('scoreSlider').value,
+                timestamp: new Date().toISOString()
+            };
+
+            if (!scoreData.className) {
+                showAlert('請選擇班級', 'danger');
+                return;
+            }
+
+            try {
+                showAlert('正在提交評分...', 'info');
+                
+                // 這裡應該要呼叫 Google Apps Script API
+                // 暫時使用模擬資料
+                await simulateApiCall(scoreData);
+                
+                showAlert(`評分提交成功！${scoreData.className} ${scoreData.period} ${scoreData.type}: ${scoreData.score}分`, 'success');
+                
+                // 重置表單
+                document.getElementById('scoreForm').reset();
+                document.querySelectorAll('.class-btn').forEach(btn => btn.classList.remove('selected'));
+                selectedClassName = '';
+                document.getElementById('scoreSlider').value = 5;
+                document.getElementById('scoreDisplay').textContent = '5';
+                
+                // 設定今天的日期
+                const today = new Date().toISOString().split('T')[0];
+                document.getElementById('scoreDate').value = today;
+                
+            } catch (error) {
+                showAlert('提交失敗，請稍後再試', 'danger');
+                console.error('Error:', error);
+            }
+        });
+
+        // 顯示警告訊息
+        function showAlert(message, type) {
+            const alertContainer = document.getElementById('alertContainer');
+            alertContainer.innerHTML = `<div class="alert alert-${type}">${message}</div>`;
+            
+            if (type === 'success' || type === 'info') {
+                setTimeout(() => {
+                    alertContainer.innerHTML = '';
+                }, 3000);
+            }
+        }
+
+        // 載入排行榜
+        async function loadRanking() {
+            try {
+                const rankingContainer = document.getElementById('rankingContainer');
+                rankingContainer.innerHTML = '<div class="alert alert-info">載入中...</div>';
+                
+                // 這裡應該要呼叫 Google Apps Script API 取得排行榜資料
+                // 暫時使用模擬資料
+                const mockRanking = [
+                    { rank: 1, className: '三忠', avgScore: 8.5 },
+                    { rank: 2, className: '五孝', avgScore: 8.2 },
+                    { rank: 3, className: '二忠', avgScore: 8.0 },
+                    { rank: 4, className: '六忠', avgScore: 7.8 },
+                    { rank: 5, className: '四孝', avgScore: 7.6 },
+                    { rank: 6, className: '一忠', avgScore: 7.4 },
+                    { rank: 7, className: '三孝', avgScore: 7.2 },
+                    { rank: 8, className: '五忠', avgScore: 7.0 },
+                    { rank: 9, className: '二孝', avgScore: 6.8 },
+                    { rank: 10, className: '四忠', avgScore: 6.6 },
+                    { rank: 11, className: '六孝', avgScore: 6.4 },
+                    { rank: 12, className: '一孝', avgScore: 6.2 }
+                ];
+                
+                let rankingHtml = '<div class="ranking-list">';
+                mockRanking.forEach(item => {
+                    rankingHtml += `
+                        <div class="ranking-item">
+                            <div class="ranking-number">${item.rank}</div>
+                            <div class="ranking-class">${item.className}</div>
+                            <div class="ranking-score">${item.avgScore}分</div>
+                        </div>
+                    `;
+                });
+                rankingHtml += '</div>';
+                
+                rankingContainer.innerHTML = rankingHtml;
+                
+            } catch (error) {
+                document.getElementById('rankingContainer').innerHTML = 
+                    '<div class="alert alert-danger">載入排行榜失敗，請稍後再試</div>';
+            }
+        }
+
+        // 載入歷史記錄
+        async function loadHistory() {
+            try {
+                const historyContainer = document.getElementById('historyContainer');
+                historyContainer.innerHTML = '<div class="alert alert-info">載入中...</div>';
+                
+                // 這裡應該要呼叫 Google Apps Script API 取得歷史記錄
+                // 暫時使用模擬資料
+                const mockHistory = [
+                    { date: '2025-08-05', period: '下午', type: '內掃', className: '三忠', score: 9, teacher: currentUser },
+                    { date: '2025-08-05', period: '上午', type: '外掃', className: '五孝', score: 8, teacher: currentUser },
+                    { date: '2025-08-04', period: '下午', type: '內掃', className: '二忠', score: 7, teacher: currentUser }
+                ];
+                
+                let historyHtml = '<div class="ranking-list">';
+                mockHistory.forEach(item => {
+                    historyHtml += `
+                        <div class="ranking-item">
+                            <div style="flex: 1;">
+                                <div><strong>${item.className}</strong> - ${item.date}</div>
+                                <div style="font-size: 12px; color: #666;">${item.period} ${item.type}</div>
+                            </div>
+                            <div class="ranking-score">${item.score}分</div>
+                        </div>
+                    `;
+                });
+                historyHtml += '</div>';
+                
+                historyContainer.innerHTML = historyHtml;
+                
+            } catch (error) {
+                document.getElementById('historyContainer').innerHTML = 
+                    '<div class="alert alert-danger">載入歷史記錄失敗，請稍後再試</div>';
+            }
+        }
+
+        // 模擬API呼叫
+        function simulateApiCall(data) {
+            return new Promise((resolve) => {
+                setTimeout(resolve, 1000); // 模擬網路延遲
+            });
+        }
+
+        // 實際的API呼叫函數（需要替換模擬函數）
+        async function callGoogleAppsScript(data) {
+            const response = await fetch(API_URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data)
+            });
+            
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            
+            return await response.json();
+        }
+    </script>
+</body>
+</html>
